@@ -45,12 +45,17 @@ def drawBoundaries():
 def randomFood():
     return (random.randint(1, 48) * 10, random.randint(1, 48) * 10)
 
-def drawString(text, window, location):
+
+def drawString(text, window, yOrdinate):
     pygame.font.init()
     myFont = pygame.font.SysFont('Ariel Black', 70)
-    textsurface = myFont.render(text, False, (255, 255, 255))
-    window.blit(textsurface, location)
+    textSurface = myFont.render(text, False, (255, 255, 255))
+    window.blit(textSurface, (250 - (textSurface.get_rect().width /2), yOrdinate))
 
+def restart():
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_r]:
+        return True
 
 def gameLoop():
     running = True
@@ -77,7 +82,6 @@ def gameLoop():
             drawBoundaries()
             if playerX == 0 or playerX == 490 or playerY == 0 or playerY == 490 or (playerX, playerY) in listOfValues:
                 gameOver = True
-                pass
             listOfValues.insert(0, (playerX, playerY))
             if food == listOfValues[0]:
                 for i in range(3):
@@ -87,7 +91,7 @@ def gameLoop():
             for i in listOfValues:
                 pygame.draw.rect(win, (255, 255, 255), ((i[0], i[1], 10, 10)))
             listOfValues.pop()
-            drawString("Score: " + str(len(listOfValues) + 1), getWindow(), (250 - 80, 500 + (100)))
+            drawString("Score: " + str(len(listOfValues) + 1), getWindow(), 600)
             pygame.draw.rect(win, (0, 255, 0), (food[0], food[1], 10, 10))
             pygame.display.update()
         else:
@@ -95,8 +99,14 @@ def gameLoop():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+            listOfValues.clear()
             win.fill((0, 0, 0))
-            drawString("Score: " + str(len(listOfValues) + 1), getWindow(), (150, 250))
+            drawString("Score: " + str(len(listOfValues) + 1), getWindow(), 250)
+            drawString("Restart: Click R", getWindow(), 300)
+            if restart():
+                playerX, playerY = 50, 50
+                setDirection("RIGHT")
+                gameOver = False
             pygame.display.update()
 
 gameLoop()
